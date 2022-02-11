@@ -37,17 +37,17 @@ int main() {
 
 	startTime = GetTickCount64();
 
-	matrixC = mulAutoVect(matrixA, matrixB, 8, 8, 150, 150);
+	matrixC = mulAutoVect(matrixA, matrixB, 8, 8, 500, 500);
 	endTime = GetTickCount64();
 	vectTime = endTime - startTime;
 
 	startTime = GetTickCount64();
-	matrixD = mulSSE(matrixA, matrixB, 8, 8, 150, 150);
+	matrixD = mulSSE(matrixA, matrixB, 8, 8, 500, 500);
 	endTime = GetTickCount64();
 	SSETime = endTime - startTime;
 
 	startTime = GetTickCount64();
-	mul(matrixA, matrixB, 8, 8, 150, 150);
+	mul(matrixA, matrixB, 8, 8, 500, 500);
 	endTime = GetTickCount64();
 	noVectTime = endTime - startTime;
 
@@ -57,7 +57,7 @@ int main() {
 	cout << "Not Vectorized/Vectorized: " << (double)noVectTime / (double)vectTime << "." << endl;
 	cout << "Not Vectorized/SSE: " << (double)noVectTime / (double)SSETime << ".\n" << endl;
 
-	if (equals(matrixC, matrixD, 8, 8, 150, 150)) cout << "equals" << endl;
+	if (equals(matrixC, matrixD, 8, 8, 500, 500)) cout << "equals" << endl;
 	else  cout << "not equals" << endl;
 
 	delete(matrixA);
@@ -107,15 +107,21 @@ void matrixFilling(double**** matrix, int matrixHeight, int matrixWidth, int sub
 
 double**** mulAutoVect(double**** matrixA, double**** matrixB, int matrixHeight, int matrixWidth, int subMatrixHeight, int subMatrixWidth) {
 	double**** matrixC = nullptr;
+	double tempA = 0;
+	double* tempB = nullptr;
+	double* tempC = nullptr;
 
 	matrixC = getMatrix(matrixHeight, matrixWidth, subMatrixHeight, subMatrixWidth);
 
 	for (int m = 0; m < matrixHeight; m++) {
 		for (int n = 0; n < matrixWidth; n++) {
 			for (int i = 0; i < subMatrixHeight; i++) {
+				tempC = matrixC[m][n][i];
 				for (int j = 0; j < subMatrixWidth; j++) {
+					tempB = matrixB[m][n][j];
+					tempA = matrixA[m][n][i][j];
 					for (int k = 0; k < subMatrixWidth; k++) {
-						matrixC[m][n][i][k] += matrixA[m][n][i][j] * matrixB[m][n][j][k];
+						tempC[k] += tempA * tempB[k];
 					}
 
 				}
